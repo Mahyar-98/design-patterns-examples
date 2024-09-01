@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 # Command: interface
 class Command(ABC):
@@ -129,8 +130,8 @@ class TurnOffFan(FanCommand):
 class Remote:
     def __init__(self) -> None:
         self.command = None
-        self.execute_history: list[Command] = []
-        self.undo_history: list[Command] = []
+        self.execute_history: List[Command] = []
+        self.undo_history: List[Command] = []
     
     # Once the command is changed, it won't be possible to undo or redo previous commands
     def set_command(self, command: Command):
@@ -148,8 +149,9 @@ class Remote:
         if len(self.execute_history) == 0:
             print("There is no command to undo!")
         else:
-            self.execute_history[-1].undo()
-            self.undo_history.append(self.execute_history[-1])
+            last_executed_command = self.execute_history[-1]
+            last_executed_command.undo()
+            self.undo_history.append(last_executed_command)
             self.execute_history.pop(-1)
 
     # Once a command is redone, it will be added to the exection history to make undo possible again.
@@ -158,8 +160,9 @@ class Remote:
         if len(self.undo_history) == 0:
             print("There is no command to redo!")
         else:
-            self.undo_history[-1].execute()
-            self.execute_history.append(self.undo_history[-1])
+            last_undone_command = self.undo_history[-1]
+            last_undone_command.execute()
+            self.execute_history.append(last_undone_command)
             self.undo_history.pop(-1)
 
 
